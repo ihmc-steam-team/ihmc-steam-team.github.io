@@ -1,13 +1,11 @@
 # FORMAT: YouTube_URL_or_ID | Title | DurationInSeconds
 # (Pipe symbol | separates fields)
 
-https://www.youtube.com/watch?v=80oSSOdpsuU | Activities Review 23-25 | 140
-https://www.youtube.com/watch?v=WpWrWQ6oBtQ | STEAM DAYS 25-26 | 130
-https://www.youtube.com/watch?v=dvu9JG1tUDA | DNA Workshop 2425 | 76
-https://www.youtube.com/watch?v=0AOLSGtwpKo | AR Workshop 2425 | 90
-https://www.youtube.com/watch?v=y7rQB7KWMmQ | LEGO Workshop 2425 | 91
+https://www.youtube.com/watch?v=80oSSOdpsuU | Activities Review 23-25 | 139
+https://www.youtube.com/watch?v=WpWrWQ6oBtQ | STEAM DAYS 25-26 | 129
+https://www.youtube.com/watch?v=dvu9JG1tUDA | DNA Workshop 2425 | 75
+https://www.youtube.com/watch?v=0AOLSGtwpKo | AR Workshop 2425 | 89
+https://www.youtube.com/watch?v=y7rQB7KWMmQ | LEGO Workshop 2425 | 90
 
-# You can also use simpler formats:
-# Just URL (defaults to 60s): https://youtu.be/VIDEO_ID
-# URL with title: https://youtu.be/VIDEO_ID | My Video Title
-# URL with title and duration: https://youtu.be/VIDEO_ID | My Video | 120
+# For the seconds, better minus 1 second for more smooth transition
+
