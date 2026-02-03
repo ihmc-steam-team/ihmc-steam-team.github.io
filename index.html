@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portrait Kiosk Display</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Portrait ratio enforcement */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        
+.kiosk-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding-top: 22vh;
+            background: url('kiosk-bg.png') no-repeat center center;
+            background-size: cover;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+        
+    </style>
+</head>
+<body class="kiosk-mode">
+    <div class="kiosk-container">
+        <!-- Background Overlay -->
+        
+        <!-- Content Container -->
+        <div class="content-wrapper">
+            <!-- Header Section -->
+            
+            <!-- Video Section -->
+ <div class="section-container">
+                <div class="section-label">
+                    <span class="label-counter" id="videoCounter">0/0</span>
+                </div>
+                
+                <div class="video-frame">
+                    <div id="player"></div>
+                    <div class="play-overlay" id="playOverlay">
+                        
+                    </div>
+                    <div class="video-info">
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Image Section -->
+            <div class="section-container">
+                <div class="section-label">
+
+                    <span class="label-counter" id="imageCounter">0/0</span>
+                </div>
+                
+                <div class="image-frame">
+                    <img id="mainImage" alt="Slideshow Image">
+                    <div class="image-info">
+                        
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="script.js"></script>
+</body>
+</html>
