@@ -50,44 +50,64 @@ YouTubeKiosk.prototype.loadPlaylist = function() {
         xhr.open('GET', self.playlistUrl + '?t=' + Date.now());
         xhr.onload = function() {
             if (xhr.status === 200) {
-                self.parsePlaylist(xhr.responseText);
+                self.parsePlaylistWithDuration(xhr.responseText);
                 
-                // Add default videos if playlist empty
                 if (self.playlist.length === 0) {
-                    console.log('Playlist empty, adding defaults');
                     self.playlist = [
-                        { id: 'dQw4w9WgXcQ', title: 'Sample Video 1' },
-                        { id: '9bZkp7q19f0', title: 'Sample Video 2' }
+                        { id: 'dQw4w9WgXcQ', title: 'Sample 1', duration: 30 },
+                        { id: '9bZkp7q19f0', title: 'Sample 2', duration: 45 }
                     ];
                 }
                 
-                console.log('Loaded ' + self.playlist.length + ' videos');
+                console.log('Loaded ' + self.playlist.length + ' videos with durations');
                 self.updateVideoCounter();
                 resolve();
             } else {
                 reject(new Error('Cannot load playlist.txt'));
             }
         };
-        xhr.onerror = function() {
-            reject(new Error('Network error loading playlist'));
-        };
+        xhr.onerror = reject;
         xhr.send();
     });
 };
 
-YouTubeKiosk.prototype.parsePlaylist = function(text) {
+YouTubeKiosk.prototype.parsePlaylistWithDuration = function(text) {
     this.playlist = [];
     var lines = text.split('\n');
     
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i].trim();
         if (line && !line.startsWith('#')) {
-            var videoId = this.extractYouTubeId(line);
-            if (videoId) {
-                this.playlist.push({
-                    id: videoId,
-                    title: 'Video ' + (i + 1)
-                });
+            var parts = line.split('|');
+            
+            if (parts.length >= 1) {
+                var urlOrId = parts[0].trim();
+                var videoId = this.extractYouTubeId(urlOrId);
+                
+                if (videoId) {
+                    var videoItem = {
+                        id: videoId,
+                        title: 'Video ' + (i + 1),
+                        duration: 60, // Default 60 seconds
+                        originalUrl: urlOrId
+                    };
+                    
+                    // Parse title if provided
+                    if (parts.length >= 2 && parts[1].trim()) {
+                        videoItem.title = parts[1].trim();
+                    }
+                    
+                    // Parse duration if provided
+                    if (parts.length >= 3) {
+                        var duration = parseInt(parts[2].trim());
+                        if (!isNaN(duration) && duration > 0) {
+                            videoItem.duration = duration;
+                        }
+                    }
+                    
+                    this.playlist.push(videoItem);
+                    console.log('Added video:', videoItem.title, 'Duration:', videoItem.duration + 's');
+                }
             }
         }
     }
@@ -114,19 +134,40 @@ YouTubeKiosk.prototype.extractYouTubeId = function(url) {
 // ==================== VIDEO PLAYER (DIRECT EMBED) ====================
 YouTubeKiosk.prototype.setupVideoPlayer = function() {
     if (this.playlist.length === 0) {
-        console.error('No videos to play');
         this.showError('No videos in playlist');
         return;
     }
     
-    console.log('Setting up direct YouTube embed');
+    console.log('Setting up video player with duration-based timing');
     this.createVideoEmbed();
     
-    // Auto-advance videos every 60 seconds (simulate playlist)
+    // Start the smart timer for this video
+    this.startVideoTimer();
+};
+
+YouTubeKiosk.prototype.startVideoTimer = function() {
+    // Clear any existing timer
+    if (this.videoTimer) {
+        clearTimeout(this.videoTimer);
+    }
+    
+    if (this.playlist.length === 0) return;
+    
+    var currentVideo = this.playlist[this.currentVideoIndex];
+    
+    console.log('Starting timer for "' + currentVideo.title + 
+                '" - Duration: ' + currentVideo.duration + ' seconds');
+    
     var self = this;
-    setInterval(function() {
+    
+    // Set timer based on video duration (add 2 seconds buffer)
+    this.videoTimer = setTimeout(function() {
+        console.log('Video duration reached, switching to next');
         self.nextVideo();
-    }, 60000); // Change video every 60 seconds
+    }, (currentVideo.duration + 2) * 1000);
+    
+    // Update countdown display
+    
 };
 
 YouTubeKiosk.prototype.createVideoEmbed = function() {
@@ -225,12 +266,23 @@ YouTubeKiosk.prototype.unmuteVideo = function() {
 };
 
 YouTubeKiosk.prototype.nextVideo = function() {
-    if (this.playlist.length <= 1) return;
+    if (this.playlist.length === 0) return;
     
+    // Clear old timers
+    if (this.videoTimer) {
+        clearTimeout(this.videoTimer);
+    }
+    if (this.countdownInterval) {
+        clearInterval(this.countdownInterval);
+    }
+    
+    // Move to next video
     this.currentVideoIndex = (this.currentVideoIndex + 1) % this.playlist.length;
-    console.log('Switching to video:', this.currentVideoIndex + 1);
+    console.log('Switching to video ' + (this.currentVideoIndex + 1));
     
+    // Create new embed and start its timer
     this.createVideoEmbed();
+    this.startVideoTimer();
 };
 
 YouTubeKiosk.prototype.updateVideoInfo = function() {
@@ -554,4 +606,5 @@ function nextKioskImage() {
     if (window.kiosk) {
         window.kiosk.nextImage();
     }
+
 }
